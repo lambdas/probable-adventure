@@ -1,7 +1,7 @@
 package lambdas.challenge
 
-import akka.stream.scaladsl.Flow
 import akka.NotUsed
+import akka.stream.scaladsl.Flow
 import akka.stream.scaladsl.Source
 
 object WordCountFlow {

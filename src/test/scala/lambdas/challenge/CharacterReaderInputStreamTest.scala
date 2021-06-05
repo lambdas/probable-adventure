@@ -1,15 +1,16 @@
 package lambdas.challenge
 
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalamock.scalatest.MockFactory
+
 import java.io.EOFException
 
 class CharacterReaderInputStreamTest extends AnyFlatSpec with Matchers with MockFactory {
 
   "CharacterReaderInputStream" should "call nextCharacter() to get the next element" in {
-    val reader = mock[CharacterReader]
-    (reader.nextCharacter _).expects().returning('a').once()
+    val reader = stub[CharacterReader]
+    (reader.nextCharacter _).when().returns('a').once()
 
     new CharacterReaderInputStream(reader).read() shouldBe 'a'
   }
@@ -22,8 +23,8 @@ class CharacterReaderInputStreamTest extends AnyFlatSpec with Matchers with Mock
   }
 
   it should "close CharacterReader when closed" in {
-    val reader = mock[CharacterReader]
-    (reader.close _).expects().once()
+    val reader = stub[CharacterReader]
+    (reader.close _).when().returns().once()
 
     new CharacterReaderInputStream(reader).close()
   }

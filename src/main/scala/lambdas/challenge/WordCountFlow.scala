@@ -2,11 +2,15 @@ package lambdas.challenge
 
 import akka.stream.scaladsl.Flow
 import akka.NotUsed
+import akka.stream.scaladsl.Source
 
 object WordCountFlow {
 
-  def apply(): Flow[String, Map[String, Int], NotUsed] = {
+  def apply(tickSource: Source[_, _]): Flow[String, Map[String, Int], NotUsed] = {
     Flow[String]
-      .fold(Map.empty[String, Int])((acc, s) => acc.updated(s, acc.getOrElse(s, 0) + 1))
+      .scan(Map.empty[String, Int])((acc, s) => acc.updated(s, acc.getOrElse(s, 0) + 1))
+      .conflate((acc, elem) => elem)
+      .extrapolate(Iterator.continually(_), None)
+      .zipWith(tickSource)((elem, _) => elem)
   }
 }

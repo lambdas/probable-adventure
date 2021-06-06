@@ -44,8 +44,8 @@ object WordCount {
   def format(wordCount: Map[String, Int]): String = {
     wordCount
       .toList
-      .sortBy(_._1)
-      .map { case (k, v) => s"$k:\t$v" }
+      .sortBy { case (k, v) => (v, k) } (Ordering.Tuple2(Ordering.Int.reverse, Ordering.String))
+      .map { case (w, c) => s"$w - $c" }
       .pipe(xs => if (xs.isEmpty) List("empty") else xs)
       .mkString("Word count:\n  ", "\n  ", "\n")
   }

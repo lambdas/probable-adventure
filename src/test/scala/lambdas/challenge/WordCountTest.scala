@@ -135,11 +135,14 @@ class WordCountTest
   }
 
   "WordCount.format" should "format a word count" in {
-    WordCount.format(Map("the" -> 1, "cat" -> 2, "sat" -> 3)) shouldBe """Word count:
-                                                                         |  cat:	2
-                                                                         |  sat:	3
-                                                                         |  the:	1
-                                                                         |""".stripMargin
+    WordCount.format(Map("the" -> 2, "cat" -> 1, "sat" -> 1,
+                         "on" -> 1, "mat" -> 1)) shouldBe """Word count:
+                                                            |  the - 2
+                                                            |  cat - 1
+                                                            |  mat - 1
+                                                            |  on - 1
+                                                            |  sat - 1
+                                                            |""".stripMargin
   }
 
   it should "tell if a word count is empty" in {

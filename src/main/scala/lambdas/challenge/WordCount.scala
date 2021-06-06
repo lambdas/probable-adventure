@@ -1,12 +1,17 @@
 package lambdas.challenge
 
+import akka.Done
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
+import akka.stream.scaladsl.Framing
+import akka.stream.scaladsl.Merge
+import akka.stream.scaladsl.Sink
 import akka.stream.scaladsl.Source
 import akka.stream.scaladsl.StreamConverters
-import akka.stream.scaladsl.Framing
 import akka.util.ByteString
-import akka.stream.scaladsl.Merge
+
+import scala.concurrent.Future
+import scala.util.chaining._
 
 object WordCount {
 
@@ -30,5 +35,18 @@ object WordCount {
       .conflate((_, elem) => elem)
       .extrapolate(Iterator.continually(_), None)
       .zipWith(tickSource)((elem, _) => elem)
+  }
+
+  def sink: Sink[Map[String, Int], Future[Done]] = {
+    Sink.foreach(println).contramap(format)
+  }
+
+  def format(wordCount: Map[String, Int]): String = {
+    wordCount
+      .toList
+      .sortBy(_._1)
+      .map { case (k, v) => s"$k:\t$v" }
+      .pipe(xs => if (xs.isEmpty) List("empty") else xs)
+      .mkString("Word count:\n  ", "\n  ", "\n")
   }
 }

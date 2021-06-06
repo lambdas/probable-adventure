@@ -125,4 +125,18 @@ class WordCountTest
 
     result.futureValue shouldBe Map("the" -> 2, "cat" -> 1, "sat" -> 1, "on" -> 1, "mat" -> 1)
   }
+
+  "WordCount.format" should "format a word count" in {
+    WordCount.format(Map("the" -> 1, "cat" -> 2, "sat" -> 3)) shouldBe """Word count:
+                                                                         |  cat:	2
+                                                                         |  sat:	3
+                                                                         |  the:	1
+                                                                         |""".stripMargin
+  }
+
+  it should "tell if a word count is empty" in {
+    WordCount.format(Map.empty) shouldBe """Word count:
+                                           |  empty
+                                           |""".stripMargin
+  }
 }

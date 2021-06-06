@@ -11,10 +11,10 @@ import scala.concurrent.Future
 
 /** An adapter to turn a [[lambdas.challenge.CharacterReader]] into an [[akka.stream.scaladsl.Source]]. */
 object CharacterReaderSource {
-  
-  def apply(characterReader: CharacterReader): Source[String, Future[IOResult]] = {
+
+  def apply(reader: CharacterReader): Source[String, Future[IOResult]] = {
     StreamConverters
-      .fromInputStream(() => new CharacterReaderInputStream(characterReader))
+      .fromInputStream(() => new CharacterReaderInputStream(reader), chunkSize = 1)
       .via(Framing.delimiter(ByteString(" "), maximumFrameLength = 256, allowTruncation = true))
       .map(_.utf8String)
   }

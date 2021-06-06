@@ -16,7 +16,7 @@ import org.scalatest.matchers.should.Matchers
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class WordCountFlowTest
+class WordCountTest
   extends AnyFlatSpec
   with BeforeAndAfterAll
   with ScalaFutures
@@ -29,10 +29,10 @@ class WordCountFlowTest
     Await.ready(system.terminate(), 1.minute)
   }
 
-  "WordCountFlow" should "respond with an empty map when completed" in {
+  "WordCountFlow.flow" should "respond with an empty map when completed" in {
     val tickSource = Source.fromIterator(() => Iterator.continually(()))
     val source = Source.empty
-    val (_, result) = WordCountFlow(tickSource).runWith(source, Sink.last)
+    val (_, result) = WordCount.flow(tickSource).runWith(source, Sink.last)
 
     result.futureValue shouldBe Map.empty
   }
@@ -40,14 +40,14 @@ class WordCountFlowTest
   it should "respond with word count when completed" in {
     val tickSource = Source.fromIterator(() => Iterator.continually(()))
     val source = Source(List("the", "cat", "sat", "on", "the", "mat"))
-    val (_, result) = WordCountFlow(tickSource).runWith(source, Sink.last)
+    val (_, result) = WordCount.flow(tickSource).runWith(source, Sink.last)
 
     result.futureValue shouldBe Map("the" -> 2, "cat" -> 1, "sat" -> 1, "on" -> 1, "mat" -> 1)
   }
 
   it should "only issue a word count on tick" in {
     val (tickProbe, tickSource) = TestSource.probe[Unit].preMaterialize()
-    val (sourceProbe, sinkProbe) = WordCountFlow(tickSource).runWith(TestSource.probe[String], TestSink.probe)
+    val (sourceProbe, sinkProbe) = WordCount.flow(tickSource).runWith(TestSource.probe[String], TestSink.probe)
 
     sourceProbe.sendNext("the")
     sinkProbe.request(1).expectNoMessage()
@@ -58,7 +58,7 @@ class WordCountFlowTest
 
   it should "issue the current word count on tick" in {
     val (tickProbe, tickSource) = TestSource.probe[Unit].preMaterialize()
-    val (sourceProbe, sinkProbe) = WordCountFlow(tickSource).runWith(TestSource.probe[String], TestSink.probe)
+    val (sourceProbe, sinkProbe) = WordCount.flow(tickSource).runWith(TestSource.probe[String], TestSink.probe)
 
     sourceProbe.sendNext("the")
     sourceProbe.sendNext("cat")
@@ -76,7 +76,7 @@ class WordCountFlowTest
   it should "lowercase incoming words" in {
     val tickSource = Source.fromIterator(() => Iterator.continually(()))
     val source = Source(List("The", "Cat", "sAt", "oN", "The", "Mat"))
-    val (_, result) = WordCountFlow(tickSource).runWith(source, Sink.last)
+    val (_, result) = WordCount.flow(tickSource).runWith(source, Sink.last)
 
     result.futureValue shouldBe Map("the" -> 2, "cat" -> 1, "sat" -> 1, "on" -> 1, "mat" -> 1)
   }

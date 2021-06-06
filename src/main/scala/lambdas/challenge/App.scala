@@ -1,22 +1,16 @@
 package lambdas.challenge
 
-import akka.Done
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.Merge
 import akka.stream.scaladsl.Source
-import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import sun.misc.Signal
-import sun.misc.SignalHandler
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
-import scala.util.Failure
 
 object App {
 

@@ -1,10 +1,11 @@
 package lambdas.challenge
 
-import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.concurrent.Eventually
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
 import java.io.EOFException
 import scala.concurrent.duration._
-import org.scalatest.matchers.should.Matchers
 
 class SlowCharacterReaderTest
   extends AnyFlatSpec

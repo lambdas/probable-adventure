@@ -24,7 +24,7 @@ class CharacterReaderInputStreamTest extends AnyFlatSpec with Matchers with Mock
 
   it should "close CharacterReader when closed" in {
     val reader = stub[CharacterReader]
-    (reader.close _).when().returns().once()
+    (reader.close _).when().returns(()).once()
 
     new CharacterReaderInputStream(reader).close()
   }

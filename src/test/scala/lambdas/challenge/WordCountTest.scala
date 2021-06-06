@@ -5,18 +5,16 @@ import akka.stream.scaladsl.Sink
 import akka.stream.scaladsl.Source
 import akka.stream.testkit.scaladsl.TestSink
 import akka.stream.testkit.scaladsl.TestSource
-import akka.testkit.TestKit
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
 
+import java.io.EOFException
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import org.scalamock.scalatest.MockFactory
-import java.io.EOFException
 
 class WordCountTest
   extends AnyFlatSpec
@@ -50,7 +48,7 @@ class WordCountTest
   it should "close CharacterReader when the stream is closed" in {
     val reader = stub[CharacterReader]
     (reader.nextCharacter _).when().throws(new EOFException)
-    (reader.close _).when().returns().once()
+    (reader.close _).when().returns(()).once()
 
     WordCount.source(reader).runWith(Sink.seq).futureValue
   }

@@ -16,11 +16,11 @@ import org.scalatest.matchers.should.Matchers
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class WordCountFlowTest 
-  extends AnyFlatSpec 
-  with BeforeAndAfterAll 
-  with ScalaFutures 
-  with Matchers 
+class WordCountFlowTest
+  extends AnyFlatSpec
+  with BeforeAndAfterAll
+  with ScalaFutures
+  with Matchers
   with Eventually {
 
   private implicit val system: ActorSystem = ActorSystem("WordCountFlowTest")
@@ -71,5 +71,13 @@ class WordCountFlowTest
       tickProbe.sendNext(())
       sinkProbe.requestNext() shouldBe Map("the" -> 1, "cat" -> 1, "sat" -> 1)
     }
+  }
+
+  it should "lowercase incoming words" in {
+    val tickSource = Source.fromIterator(() => Iterator.continually(()))
+    val source = Source(List("The", "Cat", "sAt", "oN", "The", "Mat"))
+    val (_, result) = WordCountFlow(tickSource).runWith(source, Sink.last)
+
+    result.futureValue shouldBe Map("the" -> 2, "cat" -> 1, "sat" -> 1, "on" -> 1, "mat" -> 1)
   }
 }

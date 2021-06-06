@@ -13,6 +13,7 @@ import akka.util.ByteString
 import scala.concurrent.Future
 import scala.util.chaining._
 
+/** A factory of stream components containing main application logic. */
 object WordCount {
 
   def source(readers: Seq[CharacterReader]): Source[String, NotUsed] = {

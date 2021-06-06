@@ -4,6 +4,7 @@ import java.io.EOFException
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
+/** An intentionally slow [[lambdas.challenge.CharacterReader]] implementation. */
 class SlowCharacterReader(contents: String,
                           minDelay: FiniteDuration,
                           maxDelay: FiniteDuration) extends CharacterReader {

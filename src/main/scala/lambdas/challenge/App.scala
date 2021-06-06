@@ -12,6 +12,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 
+/** The application launcher. */
 object App {
 
   private implicit val system: ActorSystem = ActorSystem("challenge")

@@ -15,12 +15,15 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import org.scalamock.scalatest.MockFactory
+import java.io.EOFException
 
 class WordCountTest
   extends AnyFlatSpec
   with BeforeAndAfterAll
   with ScalaFutures
   with Matchers
+  with MockFactory
   with Eventually {
 
   private implicit val system: ActorSystem = ActorSystem("WordCountFlowTest")
@@ -29,7 +32,49 @@ class WordCountTest
     Await.ready(system.terminate(), 1.minute)
   }
 
-  "WordCountFlow.flow" should "respond with an empty map when completed" in {
+  "WordCount.source" should "call nextCharacter() to get the next element" in {
+    val reader = stub[CharacterReader]
+    (reader.nextCharacter _).when().returns('a').once()
+    (reader.nextCharacter _).when().throws(new EOFException)
+
+    WordCount.source(reader).runWith(Sink.seq).futureValue shouldBe List("a")
+  }
+
+  it should "close the stream when CharacterReader throws EOFException" in {
+    val reader = stub[CharacterReader]
+    (reader.nextCharacter _).when().throws(new EOFException)
+
+    WordCount.source(reader).runWith(Sink.seq).futureValue shouldBe Nil
+  }
+
+  it should "close CharacterReader when the stream is closed" in {
+    val reader = stub[CharacterReader]
+    (reader.nextCharacter _).when().throws(new EOFException)
+    (reader.close _).when().returns().once()
+
+    WordCount.source(reader).runWith(Sink.seq).futureValue
+  }
+
+  it should "merge words from all readers" in {
+    val reader1 = stub[CharacterReader]
+    (reader1.nextCharacter _).when().returns('t').once()
+    (reader1.nextCharacter _).when().returns('h').once()
+    (reader1.nextCharacter _).when().returns('e').once()
+    (reader1.nextCharacter _).when().throws(new EOFException).once()
+
+    val reader2 = stub[CharacterReader]
+    (reader2.nextCharacter _).when().returns('c').once()
+    (reader2.nextCharacter _).when().returns('a').once()
+    (reader2.nextCharacter _).when().returns('t').once()
+    (reader2.nextCharacter _).when().throws(new EOFException).once()
+
+    WordCount
+      .source(List(reader1, reader2))
+      .runWith(Sink.seq)
+      .futureValue should contain theSameElementsAs List("the", "cat")
+  }
+
+  "WordCount.flow" should "respond with an empty map when completed" in {
     val tickSource = Source.fromIterator(() => Iterator.continually(()))
     val source = Source.empty
     val (_, result) = WordCount.flow(tickSource).runWith(source, Sink.last)

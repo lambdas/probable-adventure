@@ -5,7 +5,7 @@ To run the application use `./sbt run`.
 To run tests use `./sbt test`.
 
 The configuration file at `src/main/resources/application.conf` contains several settings
-that can be adjusted.
+that can be adjusted along with the definition of the readers.
 
 # Overview
 
@@ -26,6 +26,9 @@ To finish in a reasonable amount of time, some functionality has been intentiona
 
 I followed TDD process closely. The only exception is `App` which I consider a boundary to the solution.
 It would take significant effort to test it, and it only contains straightforward wiring code.
+
+The code is formatted according to [the official styleguide](https://docs.scala-lang.org/style/) with rare
+exceptions where it makes sense.
 
 # Implementation notes
 

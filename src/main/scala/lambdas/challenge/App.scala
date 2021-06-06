@@ -16,7 +16,7 @@ import scala.jdk.CollectionConverters._
 object App {
 
   private implicit val system: ActorSystem = ActorSystem("challenge")
-  private implicit val ec: ExecutionContext = system.dispatcher
+  private implicit val executionContext: ExecutionContext = system.dispatcher
 
   private val config = ConfigFactory.load()
 

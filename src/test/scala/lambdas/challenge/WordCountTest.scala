@@ -126,6 +126,14 @@ class WordCountTest
     result.futureValue shouldBe Map("the" -> 2, "cat" -> 1, "sat" -> 1, "on" -> 1, "mat" -> 1)
   }
 
+  it should "ignore punctuation" in {
+    val tickSource = Source.fromIterator(() => Iterator.continually(()))
+    val source = Source(List("the", "cat", "sat..", "on", "the", "mat!"))
+    val (_, result) = WordCount.flow(tickSource).runWith(source, Sink.last)
+
+    result.futureValue shouldBe Map("the" -> 2, "cat" -> 1, "sat" -> 1, "on" -> 1, "mat" -> 1)
+  }
+
   "WordCount.format" should "format a word count" in {
     WordCount.format(Map("the" -> 1, "cat" -> 2, "sat" -> 3)) shouldBe """Word count:
                                                                          |  cat:	2

@@ -30,7 +30,7 @@ object WordCount {
 
   def flow(tickSource: Source[_, _]): Flow[String, Map[String, Int], NotUsed] = {
     Flow[String]
-      .map(_.toLowerCase)
+      .map(_.replaceAll("[,.!]", "").toLowerCase)
       .scan(Map.empty[String, Int])((acc, s) => acc.updated(s, acc.getOrElse(s, 0) + 1))
       .conflate((_, elem) => elem)
       .extrapolate(Iterator.continually(_), None)
